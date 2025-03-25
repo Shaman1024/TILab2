@@ -1,8 +1,6 @@
 package org.example;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.BitSet;
 
 
@@ -14,34 +12,53 @@ public class Cipher {
     private static BitSet register = new BitSet(REG_SIZE);
     private static BitSet key = new BitSet();
 
-    private BitSet encrypt(String filePath, StringBuilder inputRegister) {
+    public Cipher() {
+    }
+
+    public BitSet encrypt(String filePath, String inputRegister) {
         BitSet result = new BitSet();
-        register = validate(inputRegister);
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(inputRegister);
+        register = validate(buffer);
 
 
         try (FileInputStream fileInputStream = new FileInputStream(filePath);
              BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream)) { // Используем BufferedInputStream
 
             int byteRead;
-            System.out.println("Биты файла:");
-            String binaryString = ""; // не безопасно, подправить
+
+            System.out.println("Биты файла: ");
+            StringBuilder binaryString = new StringBuilder();
 
             while ((byteRead = bufferedInputStream.read()) != -1) {
 
-                binaryString = String.format("%8s", Integer.toBinaryString(byteRead & 0xFF)).replace(' ', '0');
-                binaryString = binaryString.replaceAll(" ", "");
+                String bufferedString = String.format("%8s", Integer.toBinaryString(byteRead & 0xFF)).replace(' ', '0');
+                bufferedString = bufferedString.replaceAll(" ", "");
+                binaryString.append(bufferedString);
 
-
-                System.out.print(binaryString + " ");
+                System.out.print(bufferedString);
 
             }
 
             // ПРОВЕРИТЬ ПРАВИЛЬНОСТЬ ЗАПИСИ БИТОВ
 
             for (int i = 0; i < binaryString.length(); i++) {
-                result.set(i, (binaryString.charAt(i) == '1' ^ keyAppend()));
+
+                if (register.get(REG_SIZE - 1)) {
+                    key.set(i);
+                } else {
+                    key.clear(i);
+                }
+
+                result.set(i, (binaryString.charAt(i) == '1' ^ key.get(i)));
                 shiftRegister(); // ОСОБОЕ ВНИМАНИЕ ПРИ ПРОВЕРКЕ
             }
+
+            System.out.println("\nБиты ключа: ");
+            System.out.println(convertBitSetToString(key));
+
+            System.out.println("Зашифрованный текст");
+            System.out.println(convertBitSetToString(result));
 
             System.out.println();
 
@@ -58,7 +75,7 @@ public class Cipher {
         boolean newBit = register.get(REG_SIZE - 1);
 
         for (int i = 0; i < indices.length; i++) {
-            newBit = newBit ^ key.get(indices[i]);
+            newBit = newBit ^ register.get(indices[i] - 1);
         }
 
         for (int i = REG_SIZE - 1; i > 0; i--) {
@@ -68,12 +85,17 @@ public class Cipher {
                 register.clear(i);
             }
         }
-        register.set(REG_SIZE - 1, newBit);
+        register.set(0, newBit);
         return;
+    }
+
+    private boolean keyAppend() {
+        return register.get(REG_SIZE - 1) ? true : false;
     }
 
     private BitSet validate(StringBuilder input) {
         int counter = 0;
+
         for (int i = 0; i < input.length(); i++) {
 
             if (REG_SIZE.equals(counter)) {
@@ -84,15 +106,55 @@ public class Cipher {
                 register.set(REG_SIZE - counter - 1);
                 counter++;
             } else if (input.charAt(i) == '0') {
-                register.clear(counter);
+                register.clear(REG_SIZE - counter - 1);
                 counter++;
             }
         }
         return null;
     }
 
-    private boolean keyAppend() {
-        return register.get(REG_SIZE - 1) ? true : false;
+    public String convertBitSetToString(BitSet bitSet) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < bitSet.length(); i++) {
+            if (bitSet.get(i)) {
+                result.append('1');
+            } else {
+                result.append('0');
+            }
+        }
+        return result.toString();
+    }
+
+    public void convertBitSetToFile(BitSet bitSet, String filePath) {
+        try (FileOutputStream fos = new FileOutputStream(filePath);
+             BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+
+            byte currentByte = 0;
+            int bitCount = 0;
+
+            for (int i = 0; i < bitSet.length(); i++) {
+                if (bitSet.get(i)) {
+                    currentByte |= (1 << (7 - (bitCount % 8)));
+                }
+
+                bitCount++;
+
+                if (bitCount % 8 == 0) {
+                    bos.write(currentByte);
+                    currentByte = 0;
+                }
+            }
+
+            if (bitCount % 8 != 0) {
+                bos.write(currentByte);
+            }
+
+            System.out.println("BitSet успешно преобразован в файл: " + filePath);
+
+        } catch (IOException e) {
+            System.err.println("Ошибка при записи в файл: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

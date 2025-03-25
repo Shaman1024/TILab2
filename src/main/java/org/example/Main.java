@@ -1,17 +1,23 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import java.util.BitSet;
+import java.util.Scanner;
+
+//111111111111111111111111111111111111111111111111
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        Cipher cipher = new Cipher();
+        System.out.println("Enter text to encrypt: ");
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        BitSet bitSet = new BitSet();
+
+        BitSet myBitSet = cipher.encrypt("C:\\Users\\vanya\\IdeaProjects\\TILab2\\inputfile.txt", input);
+        cipher.convertBitSetToFile(myBitSet, "C:\\Users\\vanya\\IdeaProjects\\TILab2\\outputfile.txt");
+
+        BitSet myBitSet2 = cipher.encrypt("C:\\Users\\vanya\\IdeaProjects\\TILab2\\outputfile.txt", input);
+        cipher.convertBitSetToFile(myBitSet2, "C:\\Users\\vanya\\IdeaProjects\\TILab2\\outputfile2.txt");
     }
 }
