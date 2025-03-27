@@ -37,7 +37,7 @@ import java.util.BitSet;
             return new EncryptionResult(new BitSet(), "", 0);
         }
 
-        StringBuilder binaryString = new StringBuilder(); // Строка для всех битов файла
+        StringBuilder binaryString = new StringBuilder(); // cтрока для всех битов файла
 
 
         try (FileInputStream fileInputStream = new FileInputStream(filePath);
@@ -50,7 +50,7 @@ import java.util.BitSet;
         } catch (IOException e) {
             System.err.println("Ошибка при чтении файла: " + e.getMessage());
             e.printStackTrace();
-            return new EncryptionResult(new BitSet(), "", 0); // Пустой результат при ошибке чтения
+            return new EncryptionResult(new BitSet(), "", 0);
         }
 
         int totalBits = binaryString.length();

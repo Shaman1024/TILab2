@@ -25,14 +25,14 @@ public class CipherGUI extends JFrame {
     private JButton encryptButton;
     private JFileChooser fileChooser;
 
-    private final int BITS_TO_DISPLAY = 2 * Cipher.REG_SIZE; // 74 бита
+    private final int BITS_TO_DISPLAY = 2 * Cipher.REG_SIZE;
 
     public CipherGUI() {
         super("LFSR Потоковый Шифратор");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
         pack();
-        setMinimumSize(getPreferredSize()); // Установить минимальный размер окна
+        setMinimumSize(getPreferredSize());
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -42,7 +42,6 @@ public class CipherGUI extends JFrame {
         filePathField.setEditable(false);
         registerField = new JTextField(Cipher.REG_SIZE);
 
-        // Инициализация текстовых областей
         originalBitsAreaFirst = createBitsTextArea();
         keyBitsAreaFirst = createBitsTextArea();
         encryptedBitsAreaFirst = createBitsTextArea();
@@ -75,7 +74,7 @@ public class CipherGUI extends JFrame {
         add(new JLabel("Нач. регистр (" + Cipher.REG_SIZE + " бит):"), gbc);
         gbc.gridx = 1; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
         add(registerField, gbc);
-        gbc.gridwidth = 1; // Сброс
+        gbc.gridwidth = 1;
 
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 3; gbc.anchor = GridBagConstraints.CENTER; gbc.fill = GridBagConstraints.NONE;
         add(encryptButton, gbc);
@@ -86,7 +85,7 @@ public class CipherGUI extends JFrame {
 
         gbc.gridx = 0; gbc.gridy = currentRow++; gbc.fill = GridBagConstraints.NONE; gbc.weighty = 0.0;
         add(new JLabel("Первые " + BITS_TO_DISPLAY + " бит исходного файла:"), gbc);
-        gbc.gridy = currentRow++; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 0.2; // Дать немного высоты
+        gbc.gridy = currentRow++; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 0.2;
         add(new JScrollPane(originalBitsAreaFirst), gbc);
 
         gbc.gridy = currentRow++; gbc.fill = GridBagConstraints.NONE; gbc.weighty = 0.0;
@@ -116,7 +115,7 @@ public class CipherGUI extends JFrame {
 
         gbc.gridy = currentRow++; gbc.fill = GridBagConstraints.NONE; gbc.weighty = 0.0;
         add(new JLabel("Лог:"), gbc);
-        gbc.gridy = currentRow++; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0; // Дать основную высоту логу
+        gbc.gridy = currentRow++; gbc.fill = GridBagConstraints.BOTH; gbc.weighty = 1.0;
         add(new JScrollPane(logArea), gbc);
 
         browseButton.addActionListener(e -> browseFile());
@@ -127,8 +126,8 @@ public class CipherGUI extends JFrame {
         JTextArea textArea = new JTextArea(3, 40);
         textArea.setEditable(false);
         textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true); // По возможности перенос по словам (для битов не актуально)
-        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12)); // Моноширинный шрифт
+        textArea.setWrapStyleWord(true);
+        textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         return textArea;
     }
 
@@ -204,14 +203,14 @@ public class CipherGUI extends JFrame {
                     publish("Зашифрованные данные сохранены.");
 
                     int bitsToShow = Math.min(BITS_TO_DISPLAY, totalBits);
-                    int startIndexLast = Math.max(0, totalBits - bitsToShow); // Начало для последних битов
+                    int startIndexLast = Math.max(0, totalBits - bitsToShow);
 
                     initialBitsStrFirst = encryptionResult.originalFileBits.substring(0, bitsToShow);
                     keyBitsStrFirst = formatBitSetRange(Cipher.key, 0, bitsToShow);
                     encryptedBitsStrFirst = formatBitSetRange(encryptionResult.encryptedData, 0, bitsToShow);
 
                     initialBitsStrLast = encryptionResult.originalFileBits.substring(startIndexLast);
-                    keyBitsStrLast = formatBitSetRange(Cipher.key, startIndexLast, totalBits - startIndexLast); // Длина = остаток
+                    keyBitsStrLast = formatBitSetRange(Cipher.key, startIndexLast, totalBits - startIndexLast);
                     encryptedBitsStrLast = formatBitSetRange(encryptionResult.encryptedData, startIndexLast, totalBits - startIndexLast);
 
                     success = true;
@@ -329,7 +328,7 @@ public class CipherGUI extends JFrame {
         }
         return sb.toString();
     }
-
+    // 10111110 10001100 11100001 10010110 0011001
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
